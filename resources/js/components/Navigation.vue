@@ -2,9 +2,9 @@
 	<div>
 		<nav class="navbar" role="navigation" aria-label="main navigation">
 		  <div class="navbar-brand">
-		    <a class="navbar-item" href="https://bulma.io">
+		    <router-link :to="{ name: 'home' }" class="navbar-item">
 		      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
-		    </a>
+		    </router-link>
 
 		    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
 		      <span aria-hidden="true"></span>
@@ -15,9 +15,9 @@
 
 		  <div id="navbarBasicExample" class="navbar-menu">
 		    <div class="navbar-start">
-		      <a class="navbar-item">
+		      <router-link :to="{ name: 'home' }" class="navbar-item">
 		        Home
-		      </a>
+		      </router-link>
 
 		      <a class="navbar-item">
 		        Documentation
@@ -28,12 +28,12 @@
 		    <div class="navbar-end">
 		      <div class="navbar-item">
 		        <div class="buttons">
-		          <a class="button is-primary">
+		          <router-link :to="{ name: 'register' }" class="button is-primary">
 		            <strong>Sign up</strong>
-		          </a>
-		          <a class="button is-light">
+		          </router-link>
+		          <router-link  :to="{ name: 'login' }" class="button is-light">
 		            Log in
-		          </a>
+		          </router-link>
 		        </div>
 		      </div>
 		    </div>

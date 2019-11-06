@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { routes as routes } from '../app/index'
 
-vue.use(Router)
+
+Vue.use(Router)
 
 const router = new Router({
-	routes: []
+	routes: routes
 })
 
 export default router
