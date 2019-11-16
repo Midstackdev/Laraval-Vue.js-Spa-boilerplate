@@ -34,6 +34,17 @@
             <router-link :to="{ name: 'timeline' }" class="navbar-item">
               Timeline
             </router-link>
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                {{user.data.name}}
+              </a>
+
+              <div class="navbar-dropdown">
+                <a class="navbar-item">
+                  Logout
+                </a>
+              </div>
+            </div>
           </template>
           <div class="navbar-item" v-if="!user.authenticated">
             <div class="buttons">

@@ -2146,6 +2146,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
@@ -23067,6 +23078,24 @@ var render = function() {
                           attrs: { to: { name: "timeline" } }
                         },
                         [_vm._v("\n              Timeline\n            ")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "navbar-item has-dropdown is-hoverable"
+                        },
+                        [
+                          _c("a", { staticClass: "navbar-link" }, [
+                            _vm._v(
+                              "\n                " +
+                                _vm._s(_vm.user.data.name) +
+                                "\n              "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _vm._m(1)
+                        ]
                       )
                     ]
                   : _vm._e(),
@@ -23132,6 +23161,16 @@ var staticRenderFns = [
         _c("span", { attrs: { "aria-hidden": "true" } })
       ]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "navbar-dropdown" }, [
+      _c("a", { staticClass: "navbar-item" }, [
+        _vm._v("\n                  Logout\n                ")
+      ])
+    ])
   }
 ]
 render._withStripped = true
@@ -39241,6 +39280,14 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.component('app', __webpack_require__(/*! ./components/App.vue */ "./resources/js/components/App.vue")["default"]);
 Vue.component('navigation', __webpack_require__(/*! ./components/Navigation.vue */ "./resources/js/components/Navigation.vue")["default"]);
+_vuex__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('auth/setToken').then(function () {
+  _vuex__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('auth/fetchUser')["catch"](function () {
+    _vuex__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('auth/clearAuth');
+    _router__WEBPACK_IMPORTED_MODULE_0__["default"].replace({
+      name: 'login'
+    });
+  });
+});
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -39447,7 +39494,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************************!*\
   !*** ./resources/js/app/auth/vuex/actions.js ***!
   \***********************************************/
-/*! exports provided: register, login, fetchUser, setToken */
+/*! exports provided: register, login, fetchUser, setToken, checkTokenExists, clearAuth */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39456,9 +39503,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "login", function() { return login; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchUser", function() { return fetchUser; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setToken", function() { return setToken; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkTokenExists", function() { return checkTokenExists; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearAuth", function() { return clearAuth; });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../helpers */ "./resources/js/helpers/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_3__);
+
+
 
 
 var register = function register(_ref, _ref2) {
@@ -39495,8 +39550,33 @@ var fetchUser = function fetchUser(_ref5) {
 var setToken = function setToken(_ref6, token) {
   var commit = _ref6.commit,
       dispatch = _ref6.dispatch;
+
+  if (Object(lodash__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(token)) {
+    return dispatch('checkTokenExists').then(function (token) {
+      Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setHttpToken"])(token);
+    });
+  }
+
   commit('SET_TOKEN', token);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setHttpToken"])(token);
+};
+var checkTokenExists = function checkTokenExists(_ref7, token) {
+  var commit = _ref7.commit,
+      dispatch = _ref7.dispatch;
+  return localforage__WEBPACK_IMPORTED_MODULE_3___default.a.getItem('authtoken').then(function (token) {
+    if (Object(lodash__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(token)) {
+      return Promise.reject('No Storage Token');
+    }
+
+    return Promise.resolve(token);
+  });
+};
+var clearAuth = function clearAuth(_ref8, token) {
+  var commit = _ref8.commit;
+  commit('SET_AUTHENTICATED', false);
+  commit('SET_USER_DATA', null);
+  commit('SET_TOKEN', null);
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setHttpToken"])(null);
 };
 
 /***/ }),
