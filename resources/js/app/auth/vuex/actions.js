@@ -33,6 +33,13 @@ export const fetchUser = ({ commit }) => {
 		})
 }
 
+export const logout = ({ dispatch }) => {
+	return axios.post('/api/logout')
+		.then(response => {
+			dispatch('clearAuth')
+		})
+}
+
 export const setToken = ({ commit, dispatch }, token ) => {
 
 	if (isEmpty(token)) {
