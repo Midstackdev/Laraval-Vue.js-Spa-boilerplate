@@ -1839,6 +1839,10 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -1889,6 +1893,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1910,8 +1916,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         },
         context: this
       }).then(function () {
-        _this.$router.replace({
-          name: 'home'
+        localforage__WEBPACK_IMPORTED_MODULE_1___default.a.getItem('intended').then(function (name) {
+          if (Object(lodash__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(name)) {
+            _this.$router.replace({
+              name: 'home'
+            });
+
+            return;
+          }
+
+          _this.$router.replace({
+            name: name
+          });
         });
       });
     }
@@ -2047,7 +2063,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      index: null
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    axios.get('/api/timeline').then(function (response) {
+      _this.index = response.data.data;
+    });
+  }
+});
 
 /***/ }),
 
@@ -22940,7 +22971,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("p", [_vm._v("Timeline")])
+  return _c("div", [_c("p", [_vm._v(_vm._s(_vm.index))])])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39287,6 +39318,8 @@ _vuex__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('auth/setToken').then(fun
       name: 'login'
     });
   });
+})["catch"](function () {
+  _vuex__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('auth/clearAuth');
 });
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -39779,7 +39812,7 @@ __webpack_require__.r(__webpack_exports__);
   name: 'home',
   component: _components__WEBPACK_IMPORTED_MODULE_0__["Home"],
   meta: {
-    guest: true,
+    // guest: true,
     needsAuth: false
   }
 }]);
@@ -40099,6 +40132,48 @@ var setHttpToken = function setHttpToken(token) {
 
 /***/ }),
 
+/***/ "./resources/js/router/beforeEach.js":
+/*!*******************************************!*\
+  !*** ./resources/js/router/beforeEach.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vuex */ "./resources/js/vuex/index.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+var beforeEach = function beforeEach(to, from, next) {
+  _vuex__WEBPACK_IMPORTED_MODULE_0__["default"].dispatch('auth/checkTokenExists').then(function () {
+    if (to.meta.guest) {
+      next({
+        name: 'timeline'
+      });
+      return;
+    }
+
+    next();
+  })["catch"](function () {
+    if (to.meta.needsAuth) {
+      localforage__WEBPACK_IMPORTED_MODULE_1___default.a.setItem('intended', to.name);
+      next({
+        name: 'login'
+      });
+      return;
+    }
+
+    next();
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (beforeEach);
+
+/***/ }),
+
 /***/ "./resources/js/router/index.js":
 /*!**************************************!*\
   !*** ./resources/js/router/index.js ***!
@@ -40112,6 +40187,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _app_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app/index */ "./resources/js/app/index.js");
+/* harmony import */ var _beforeEach__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./beforeEach */ "./resources/js/router/beforeEach.js");
+
 
 
 
@@ -40119,6 +40196,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: _app_index__WEBPACK_IMPORTED_MODULE_2__["routes"]
 });
+router.beforeEach(_beforeEach__WEBPACK_IMPORTED_MODULE_3__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (router);
 
 /***/ }),
